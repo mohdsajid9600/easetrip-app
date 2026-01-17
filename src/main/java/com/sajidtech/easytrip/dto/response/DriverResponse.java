@@ -15,6 +15,4 @@ public class DriverResponse {
     private String name;
     private int age;
     private String email;
-    private List<Booking> booking = new ArrayList<>();
-
 }
