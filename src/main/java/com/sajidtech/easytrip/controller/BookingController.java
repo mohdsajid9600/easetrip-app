@@ -22,4 +22,11 @@ public class BookingController {
         BookingResponse bookingResponse = bookingService.bookCab(bookingRequest, customerId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(bookingResponse);
     }
+
+    @PutMapping("/update-bookedInfo/customer/{customerId}")
+    public ResponseEntity<BookingResponse> updateBookedDetails(@RequestBody BookingRequest bookingRequest,
+                                                               @PathVariable("customerId") int customerId){
+        BookingResponse bookingResponse = bookingService.updateBookedDetails(bookingRequest, customerId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(bookingResponse);
+    }
 }

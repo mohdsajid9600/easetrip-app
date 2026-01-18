@@ -18,7 +18,7 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @PostMapping("/create")
+    @PostMapping("/register")
     public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest customerRequest){
         CustomerResponse customerResponse = customerService.createCustomer(customerRequest);
         // return new ResponseEntity<>(customerResponse, HttpStatus.CREATED);
@@ -33,16 +33,26 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.FOUND).body(customerResponse);
     }
 
-    @GetMapping("/getBy-gender-age")
+    @GetMapping("/getBy-gender-and-age")
     public ResponseEntity<List<CustomerResponse>> getAllByGenderAndAge(@RequestParam("gender") Gender gender,
                                                        @RequestParam("age") int age){
         List<CustomerResponse> responses = customerService.getAllByGenderAndAge(gender, age);
         return ResponseEntity.status(HttpStatus.FOUND).body(responses);
     }
 
-    @GetMapping("/getAll-greaterThen/{age}")
+    @GetMapping("/getAll/age-greater-then/{age}")
     public ResponseEntity<List<CustomerResponse>> getAllGreaterThenAge(@PathVariable("age") int age){
         List<CustomerResponse> responses = customerService.getAllGreaterThenAge(age);
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
+    @PutMapping("/update/{customerId}")
+    public ResponseEntity<String> updateCustomerInfo(@RequestBody CustomerRequest customerRequest,
+                                     @PathVariable("customerId") int customerId){
+        boolean isUpdated = customerService.updateCustomerInfo(customerRequest, customerId);
+        if(isUpdated){
+            return ResponseEntity.status(HttpStatus.OK).body("Your Record updated Successfully!!");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Customer not found, Record not updated!");
+    }
+
 }

@@ -9,6 +9,8 @@ import com.sajidtech.easytrip.transformer.DriverTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class DriverService {
 
@@ -26,5 +28,20 @@ public class DriverService {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver ID Invalid with : "+id));
         return DriverTransformer.DriverToDriverResponse(driver);
+    }
+
+    public boolean updateDriverInfo(DriverRequest driverRequest, int driverId) {
+        Optional<Driver> OptionalDriver = driverRepository.findById(driverId);
+        if(OptionalDriver.isEmpty()) return false;
+
+        Driver driver = OptionalDriver.get();
+
+        driver.setName(driverRequest.getName());
+        driver.setAge(driverRequest.getAge());
+        driver.setEmail(driverRequest.getEmail());
+
+        driverRepository.save(driver);
+
+        return true;
     }
 }

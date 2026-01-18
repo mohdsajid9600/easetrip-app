@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,5 +39,20 @@ public class CustomerService {
     public List<CustomerResponse> getAllGreaterThenAge(int age) {
         List<Customer> customers = customerRepository.getAllGreaterThenAge(age);
         return customers.stream().map((customer) -> CustomerTransformer.CustomerToCustomerResponse(customer)).collect(Collectors.toList());
+    }
+
+    public Boolean updateCustomerInfo(CustomerRequest customerRequest, int customerId) {
+        Optional<Customer> OptCustomer = customerRepository.findById(customerId);
+        if(OptCustomer.isEmpty()){
+            return false;
+        }
+        Customer customer = OptCustomer.get();
+
+        customer.setName(customerRequest.getName());
+        customer.setAge(customerRequest.getAge());
+        customer.setEmail(customerRequest.getEmail());
+
+        customerRepository.save(customer);
+        return true;
     }
 }

@@ -28,4 +28,18 @@ public class CabService {
         Driver savedDriver = driverRepository.save(driver);
         return CabTransformer.CabToCabResponse(savedDriver.getCab(), savedDriver);
     }
+
+    public CabResponse updateCabByDriver(CabRequest cabRequest, int driverId) {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver not Found, Invalid Id "));
+        int cabId = driver.getCab().getCabId();
+        Cab cab = cabRepository.findById(cabId).orElseThrow(()-> new CabNotFoundException("Cab not found by Driver"));
+
+        cab.setCabModel(cabRequest.getCabModel());
+        cab.setCabNumber(cabRequest.getCabNumber());
+        cab.setPerKmRate(cabRequest.getPerKmRate());
+
+        Cab savedCab = cabRepository.save(cab);
+
+        return CabTransformer.CabToCabResponse(savedCab, driver);
+    }
 }

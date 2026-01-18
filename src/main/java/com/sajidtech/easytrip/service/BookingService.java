@@ -3,8 +3,8 @@ package com.sajidtech.easytrip.service;
 
 import com.sajidtech.easytrip.dto.request.BookingRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
-import com.sajidtech.easytrip.exception.CabUnavailabaleException;
-import com.sajidtech.easytrip.exception.CustomerNotFoundException;
+import com.sajidtech.easytrip.emailTemplate.EmailTemplate;
+import com.sajidtech.easytrip.exception.*;
 import com.sajidtech.easytrip.model.Booking;
 import com.sajidtech.easytrip.model.Cab;
 import com.sajidtech.easytrip.model.Customer;
@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 
 @Service
@@ -56,33 +58,17 @@ public class BookingService {
         Customer savedCustomer = customerRepository.save(customer);
         Driver savedDriver = driverRepository.save(driver);
 
-
         BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(savedBooking, availableCab,savedDriver,savedCustomer);
+
+        //EmailSender to the customer who ever booked the cab
         sendEmail(bookingResponse);
+
         return bookingResponse;
     }
 
     private void sendEmail(BookingResponse booking){
-        String formate =
-                "Dear "+booking.getCustomerResponse().getName()+",\n\n" +
-                        "Thank you for choosing EasyTrip!\n\n" +
-                        "Your cab booking has been successfully confirmed. Please find your trip details below:\n\n" +
-                        "========================================\n" +
-                        "Passenger Name : "+booking.getCustomerResponse().getName()+"\n\n" +
-                        "Pickup Point   :"+booking.getPickup()+"\n" +
-                        "Drop Point     : "+booking.getDestination()+"\n\n" +
-                        "Total Fare     : ₹"+booking.getBillAmount()+"\n\n" +
-                        "Cab Model      : "+booking.getCabResponse().getCabModel()+"\n" +
-                        "Cab Number     : "+booking.getCabResponse().getCabNumber()+"\n\n" +
-                        "Driver Name    : "+booking.getCabResponse().getDriverResponse().getName()+"\n" +
-                        "Driver Email   : "+booking.getCabResponse().getDriverResponse().getEmail()+"\n" +
-                        "========================================\n\n" +
-                        "Your cab will reach your pickup location shortly.\n\n" +
-                        "We wish you a safe and comfortable journey with EasyTrip.\n\n" +
-                        "Regards,\n" +
-                        "EasyTrip Support Team\n" +
-                        "Customer Care: +91-90000-00000\n" +
-                        "Email: support@easytrip.com";
+
+        String formate = EmailTemplate.bookingConfirmationTemplate(booking);
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom("easetriptrevler@gmail.com");
@@ -90,5 +76,34 @@ public class BookingService {
         simpleMailMessage.setSubject("EasyTrip Booking Confirmation.");
         simpleMailMessage.setText(formate);
         javaMailSender.send(simpleMailMessage);
+    }
+
+    public BookingResponse updateBookedDetails(BookingRequest bookingRequest, int customerId) {
+
+        Optional<Integer> OptionalDriverId = bookingRepository.getDriverIdByCustomerId(customerId);
+
+        if(OptionalDriverId.isEmpty()){
+            throw new DriverIdNotFoundException("We are not fetch DriverId from SQL");
+        }
+        int driverId = OptionalDriverId.get();
+
+        Driver driver = driverRepository.findById(driverId)
+                .orElseThrow(()-> new DriverNotFoundException("Driver Not Found"));
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(()-> new CustomerNotFoundException("Customer not found at booking updation"));
+
+        Optional<Booking> OptionalBooking = bookingRepository.updateBookedDetails(customerId);
+        if(OptionalBooking.isEmpty()) {
+            throw new BookingNotFound("Customer with id "+ customerId+" have no one booking yet!");
+        }
+        Booking booking = OptionalBooking.get();
+
+        booking.setPickup(bookingRequest.getPickup());
+        booking.setDestination(bookingRequest.getDestination());
+        booking.setTripDistanceInKm(bookingRequest.getTripDistanceInKm());
+        booking.setBillAmount(bookingRequest.getTripDistanceInKm() * driver.getCab().getPerKmRate());
+        Booking savedBooking =  bookingRepository.save(booking);
+
+        return BookingTransformer.bookingToBookingResponse(savedBooking, driver.getCab(), driver, customer);
     }
 }

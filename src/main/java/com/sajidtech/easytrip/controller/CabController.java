@@ -24,9 +24,17 @@ public class CabController {
     @Autowired
     private DriverService driverService;
 
-    @PostMapping("/add/{id}")
-    public ResponseEntity<CabResponse> createCab(@RequestBody CabRequest cabRequest, @PathVariable("id") int id){
-        CabResponse cabResponse =  cabService.createCab(cabRequest, id);
+    @PostMapping("/register/driver/{driverId}")
+    public ResponseEntity<CabResponse> createCab(@RequestBody CabRequest cabRequest, @PathVariable("driverId") int driverId){
+        CabResponse cabResponse =  cabService.createCab(cabRequest, driverId);
         return new ResponseEntity<>(cabResponse, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update/driver/{driverId}")
+    public ResponseEntity<CabResponse> updateCabByDriver(@RequestBody CabRequest cabRequest,
+                                                         @PathVariable("driverId") int driverId){
+        CabResponse cabResponse = cabService.updateCabByDriver(cabRequest, driverId);
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(cabResponse);
     }
 }
