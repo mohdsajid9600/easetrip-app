@@ -34,11 +34,8 @@ public class BookingController {
 
     @PutMapping("/customer/{id}/cancel")
     public ResponseEntity<String> cancelBooking(@PathVariable("id") int customerId){
-        boolean isCancelled = bookingService.cancelBooking(customerId);
-        if(isCancelled){
-            return ResponseEntity.ok("Your booking has been Cancelled !");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+         bookingService.cancelBooking(customerId);
+        return ResponseEntity.ok("Your booking has been Cancelled !");
     }
 
     @PutMapping("/driver/{id}/complete")

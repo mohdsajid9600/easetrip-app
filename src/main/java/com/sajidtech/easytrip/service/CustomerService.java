@@ -1,6 +1,7 @@
 package com.sajidtech.easytrip.service;
 
 import com.sajidtech.easytrip.Enum.Gender;
+import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.Enum.TripStatus;
 import com.sajidtech.easytrip.dto.request.CustomerRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
@@ -41,8 +42,8 @@ public class CustomerService {
         return CustomerTransformer.customerToCustomerResponse(savedCustomer);
     }
 
-    public CustomerResponse getCustomerById(int id) {
-        Customer customer = customerRepository.findById(id).orElseThrow(()-> new CustomerNotFoundException("Customer Id is Invalid with : "+id));
+    public CustomerResponse getCustomerById(int customerId) {
+        Customer customer = checkValidCustomer(customerId);
         return CustomerTransformer.customerToCustomerResponse(customer);
     }
 
@@ -56,24 +57,18 @@ public class CustomerService {
         return customers.stream().map(CustomerTransformer::customerToCustomerResponse).collect(Collectors.toList());
     }
 
-    public Boolean updateCustomerInfo(CustomerRequest customerRequest, int customerId) {
-        Optional<Customer> OptCustomer = customerRepository.findById(customerId);
-        if(OptCustomer.isEmpty()){
-            return false;
-        }
-        Customer customer = OptCustomer.get();
+    public void updateCustomerInfo(CustomerRequest customerRequest, int customerId) {
+        Customer customer = checkValidCustomer(customerId);
 
         customer.setName(customerRequest.getName());
         customer.setAge(customerRequest.getAge());
         customer.setEmail(customerRequest.getEmail());
 
         customerRepository.save(customer);
-        return true;
     }
 
     public List<BookingResponse> getAllBookings(int customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer Id is Invalid"));
+        Customer customer = checkValidCustomer(customerId);
 
         return customer.getBooking().stream().map(booking -> {
 
@@ -85,8 +80,7 @@ public class CustomerService {
     }
 
     public List<BookingResponse> getAllCompletedBookings(int customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer Id is Invalid"));
+        Customer customer = checkValidCustomer(customerId);
 
         return customer.getBooking().stream().filter(booking -> booking.getTripStatus().equals(TripStatus.COMPLETED)).map(booking -> {
 
@@ -99,8 +93,7 @@ public class CustomerService {
 
     public List<BookingResponse> getAllCancelledBookings(int customerId) {
 
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer Id is Invalid"));
+        Customer customer = checkValidCustomer(customerId);
 
         return customer.getBooking().stream().filter(booking -> booking.getTripStatus().equals(TripStatus.CANCELLED)).map(booking -> {
 
@@ -111,8 +104,7 @@ public class CustomerService {
     }
 
     public BookingResponse getProgressBookings(int customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer Id is Invalid"));
+        Customer customer = checkValidCustomer(customerId);
         Booking progressBooking = customer.getBooking().stream().filter(booking -> booking.getTripStatus().equals(TripStatus.IN_PROGRESS))
                 .findFirst().orElseThrow(()-> new BookingNotFound("Customer has no one Booking who is IN_PROGRESS"));
 
@@ -120,5 +112,12 @@ public class CustomerService {
         return BookingTransformer.bookingToBookingResponseForCustomer(progressBooking,driver.getCab(), driver);
     }
 
-
+    private Customer checkValidCustomer(int customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(()-> new CustomerNotFoundException("Customer Id is Invalid with : "+customerId));
+        if(customer.getStatus() == Status.INACTIVE){
+            throw new RuntimeException("Customer is inactive. Access denied");
+        }
+        return customer;
+    }
 }

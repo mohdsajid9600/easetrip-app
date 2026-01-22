@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.service;
 
+import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.dto.request.CabRequest;
 import com.sajidtech.easytrip.dto.response.CabResponse;
 import com.sajidtech.easytrip.exception.CabNotFoundException;
@@ -27,29 +28,69 @@ public class CabService {
     private DriverRepository driverRepository;
 
     public CabResponse createCab(CabRequest cabRequest, int driverId) {
+        Driver driver = checkExistenceOfDriver(driverId);
+        if(driver.getCab() != null){
+            throw new RuntimeException("Driver have already registered one cab !");
+        }
         Cab cab = CabTransformer.cabRequestToCab(cabRequest);
-        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver ID Does not Exist for the Cab: "+driverId));
         driver.setCab(cab);
         Driver savedDriver = driverRepository.save(driver);
         return CabTransformer.cabToCabResponse(savedDriver.getCab(), savedDriver);
     }
 
     public CabResponse updateCabByDriver(CabRequest cabRequest, int driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver not Found, Invalid Id "));
-        int cabId = driver.getCab().getCabId();
-        Cab cab = cabRepository.findById(cabId).orElseThrow(()-> new CabNotFoundException("Cab not found by Driver"));
+        Driver driver = checkExistenceOfDriver(driverId);
+        Cab cab = driver.getCab();
+        if(cab == null){
+            throw new CabNotFoundException("Cab not found by Driver");
+        }
 
         cab.setCabModel(cabRequest.getCabModel());
         cab.setCabNumber(cabRequest.getCabNumber());
         cab.setPerKmRate(cabRequest.getPerKmRate());
 
-        Cab savedCab = cabRepository.save(cab);
+        Driver savedDriver = driverRepository.save(driver);
 
-        return CabTransformer.cabToCabResponse(savedCab, driver);
+        return CabTransformer.cabToCabResponse(savedDriver.getCab(), savedDriver);
     }
 
     public List<CabResponse> getAllAvailableCabs() {
         List<Cab> availableCabs = cabRepository.getAllAvailableCab();
         return availableCabs.stream().map(CabTransformer::cabToCabResponseForAvailable).collect(Collectors.toList());
+    }
+
+
+    public void deleteCabByDriver(int driverId) {
+        Driver driver = checkExistenceOfDriver(driverId);
+
+        Cab cab = driver.getCab();
+        validateCabForDeletion(cab); // validate or throw exception
+
+        //break Relation
+        driver.setCab(null);
+        driverRepository.save(driver);
+
+        //Delete cab
+        cabRepository.deleteById(cab.getCabId());
+    }
+
+    private Driver checkExistenceOfDriver(int driverId) {
+        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver id is Invalid"));
+        if(driver.getStatus() == Status.INACTIVE){
+            throw new RuntimeException("Driver is inactive. Access denied");
+        }
+        return driver;
+    }
+
+    private void validateCabForDeletion(Cab cab) {
+        if(cab == null){
+            throw new CabNotFoundException("Driver has no Cab assigned");
+        }
+        if(cab.getStatus() == Status.INACTIVE){
+            throw new RuntimeException("Cab Already INACTIVE");
+        }
+        if(!cab.isAvailable()){
+            throw new RuntimeException("Cab cannot be deleted because it is currently booked");
+        }
     }
 }

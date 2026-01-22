@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.model;
 
+import com.sajidtech.easytrip.Enum.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,9 @@ public class Driver {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "driver_id")

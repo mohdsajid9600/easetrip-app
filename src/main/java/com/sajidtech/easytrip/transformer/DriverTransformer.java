@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.transformer;
 
+import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.dto.request.DriverRequest;
 import com.sajidtech.easytrip.dto.response.DriverResponse;
 import com.sajidtech.easytrip.model.Driver;
@@ -12,6 +13,7 @@ public class DriverTransformer {
                 .name(driverRequest.getName())
                 .age(driverRequest.getAge())
                 .email(driverRequest.getEmail())
+                .status(Status.ACTIVE)
                 .build();
     }
 
@@ -21,6 +23,7 @@ public class DriverTransformer {
                 .age(driver.getAge())
                 .email(driver.getEmail())
                 .driverId(driver.getDriveId())
+                .status(driver.getStatus())
                 .build();
     }
 

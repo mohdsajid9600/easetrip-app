@@ -1,6 +1,7 @@
 package com.sajidtech.easytrip.model;
 
 import com.sajidtech.easytrip.Enum.Gender;
+import com.sajidtech.easytrip.Enum.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,8 @@ public class Customer {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private Gender gender;
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")

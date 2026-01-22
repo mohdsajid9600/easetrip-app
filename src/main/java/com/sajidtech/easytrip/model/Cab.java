@@ -1,6 +1,8 @@
 package com.sajidtech.easytrip.model;
 
 
+import com.sajidtech.easytrip.Enum.Status;
+import com.sajidtech.easytrip.Enum.TripStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,5 +28,7 @@ public class Cab {
     @Column(nullable = false)
     private double perKmRate;
     private boolean available;
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
 }

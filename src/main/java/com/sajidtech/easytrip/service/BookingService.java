@@ -1,6 +1,7 @@
 package com.sajidtech.easytrip.service;
 
 
+import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.Enum.TripStatus;
 import com.sajidtech.easytrip.dto.request.BookingRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
@@ -45,12 +46,10 @@ public class BookingService {
     JavaMailSender javaMailSender;
 
     public BookingResponse bookCab(BookingRequest bookingRequest, int customerId) {
-        Customer customer = customerRepository.findById(customerId).orElseThrow(()->
-                new CustomerNotFoundException("Invalid customer Id for Booking : "+customerId));
+        Customer customer = checkValidCustomer(customerId);
 
-        Booking oldBooking = customer.getBooking().stream().filter((b) -> b.getTripStatus().equals((TripStatus.IN_PROGRESS)))
-                 .findAny().orElse(null);
-        if(oldBooking != null){
+        boolean hasOldBooking = customer.getBooking().stream().anyMatch(b-> b.getTripStatus().equals((TripStatus.IN_PROGRESS)));
+        if(hasOldBooking){
             throw new RuntimeException("The customer has already been One Journey which status is IN_PROGRESS");
         }
 
@@ -77,38 +76,21 @@ public class BookingService {
         return bookingResponse;
     }
 
-    private void sendEmail(BookingResponse booking){
-
-        String formate = EmailTemplate.bookingConfirmationTemplate(booking);
-
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("easetriptrevler@gmail.com");
-        simpleMailMessage.setTo(booking.getCustomerResponse().getEmail());
-        simpleMailMessage.setSubject("EasyTrip Booking Confirmation.");
-        simpleMailMessage.setText(formate);
-        javaMailSender.send(simpleMailMessage);
-    }
-
     public BookingResponse updateBookedDetails(BookingRequest bookingRequest, int customerId) {
 
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer not found at booking updation"));
+        Customer customer = checkValidCustomer(customerId);
 
-        Optional<Booking> OptionalBooking = bookingRepository.updateBookedDetails(customerId);
-        if(OptionalBooking.isEmpty()) {
-            throw new BookingNotFound("Customer with id "+ customerId+" have no one booking yet!");
-        }
-        Booking booking = OptionalBooking.get();
+        Booking booking = customer.getBooking().stream().filter((b) -> b.getTripStatus().equals(TripStatus.IN_PROGRESS)).findAny()
+                .orElseThrow(()-> new BookingNotFound("Customer has no one Booking which is IN_PROGRESS"));
 
-        Optional<Integer> OptionalDriverId = bookingRepository.getDriverIdByCustomerId(customerId);
+        Optional<Integer> OptionalDriverId = bookingRepository.getDriverIdByBookingId(booking.getBookingId());
         if(OptionalDriverId.isEmpty()){
             throw new DriverIdNotFoundException("We are not fetch DriverId from SQL");
         }
-        int driverId = OptionalDriverId.get();
 
+        int driverId = OptionalDriverId.get();
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(()-> new DriverNotFoundException("Driver Not Found"));
-
 
         booking.setPickup(bookingRequest.getPickup());
         booking.setDestination(bookingRequest.getDestination());
@@ -119,9 +101,8 @@ public class BookingService {
         return BookingTransformer.bookingToBookingResponse(savedBooking, driver.getCab(), driver, customer);
     }
 
-    public boolean cancelBooking(int customerId) {
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new CustomerNotFoundException("Customer with Invalid Id"));
+    public void cancelBooking(int customerId) {
+        Customer customer = checkValidCustomer(customerId);
 
         Booking booking = customer.getBooking().stream().filter((b) -> b.getTripStatus().equals(TripStatus.IN_PROGRESS)).findAny()
                 .orElseThrow(()-> new BookingNotFound("Customer has no one Booking which is IN_PROGRESS"));
@@ -137,21 +118,45 @@ public class BookingService {
 
         driver.getCab().setAvailable(true);
         driverRepository.save(driver);
-
-        return true;
     }
 
     public void completeBookingByDriver(int driverId) {
+       Driver driver = checkValidDriver(driverId);
+
+       Booking booking = driver.getBooking().stream().filter(b -> b.getTripStatus().equals(TripStatus.IN_PROGRESS))
+              .findAny().orElseThrow(() -> new BookingNotFound("No one Booking is available in Driver List to the completion"));
+
+           booking.setTripStatus(TripStatus.COMPLETED);
+           driver.getCab().setAvailable(true);
+           driverRepository.save(driver);
+    }
+
+    private Driver checkValidDriver(int driverId) {
        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Invalid Driver ID"));
+       if(driver.getStatus() == Status.INACTIVE){
+           throw new RuntimeException("Driver is Inactive, Access denied ");
+       }
+       return driver;
+    }
 
-      Booking booking = driver.getBooking().stream().filter(b -> b.getTripStatus().equals(TripStatus.IN_PROGRESS)).findAny().orElse(null);
+    private Customer checkValidCustomer(int customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(()-> new CustomerNotFoundException("Customer Id is Invalid with : "+customerId));
+        if(customer.getStatus() == Status.INACTIVE){
+            throw new RuntimeException("Customer is inactive. Access denied");
+        }
+        return customer;
+    }
 
-      if(booking != null){
-          booking.setTripStatus(TripStatus.COMPLETED);
-          driver.getCab().setAvailable(true);
-          driverRepository.save(driver);
-      }else{
-          throw new BookingNotFound("No one Booking is available in Driver List to the completion");
-      }
+    private void sendEmail(BookingResponse booking){
+
+        String formate = EmailTemplate.bookingConfirmationTemplate(booking);
+
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom("easetriptrevler@gmail.com");
+        simpleMailMessage.setTo(booking.getCustomerResponse().getEmail());
+        simpleMailMessage.setSubject("EasyTrip Booking Confirmation.");
+        simpleMailMessage.setText(formate);
+        javaMailSender.send(simpleMailMessage);
     }
 }

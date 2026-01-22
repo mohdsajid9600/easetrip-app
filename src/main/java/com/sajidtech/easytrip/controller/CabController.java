@@ -2,13 +2,7 @@ package com.sajidtech.easytrip.controller;
 
 import com.sajidtech.easytrip.dto.request.CabRequest;
 import com.sajidtech.easytrip.dto.response.CabResponse;
-import com.sajidtech.easytrip.dto.response.DriverResponse;
-import com.sajidtech.easytrip.model.Cab;
-import com.sajidtech.easytrip.model.Driver;
 import com.sajidtech.easytrip.service.CabService;
-import com.sajidtech.easytrip.service.DriverService;
-import com.sajidtech.easytrip.transformer.CabTransformer;
-import com.sajidtech.easytrip.transformer.DriverTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +35,12 @@ public class CabController {
     public ResponseEntity<List<CabResponse>> getAllAvailableCabs(){
         List<CabResponse> responses = cabService.getAllAvailableCabs();
         return ResponseEntity.ok(responses);
+    }
+
+    //API under development
+    @DeleteMapping("/driver/{id}")
+    public ResponseEntity<String> deleteCabByDriver(@PathVariable("id") int driverId){
+//         cabService.deleteCabByDriver(driverId);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Cab not delete because API is Under development!");
     }
 }

@@ -34,11 +34,8 @@ public class DriverController {
     @PutMapping("/driver/{id}/update")
     public ResponseEntity<String> updateDriverInfo(@RequestBody DriverRequest driverRequest,
                                                    @PathVariable("id") int driverId){
-        boolean isUpdated = driverService.updateDriverInfo(driverRequest, driverId);
-        if(isUpdated){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Your Record updated successfully !");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+        driverService.updateDriverInfo(driverRequest, driverId);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Your Record updated successfully !");
     }
 
     @GetMapping("/driver/{id}/bookings")
@@ -62,5 +59,12 @@ public class DriverController {
     public ResponseEntity<BookingResponse> getAllInProgressBookings(@PathVariable("id") int driverId){
         BookingResponse response = driverService.getAllInProgressBookings(driverId);
         return ResponseEntity.ok(response);
+    }
+
+
+    @DeleteMapping("/driver/{id}")
+    public ResponseEntity<String> deleteDriverById(@PathVariable("id") int driverId){
+        driverService.deleteDriverById(driverId);
+        return ResponseEntity.status(HttpStatus.OK).body("Driver deleted Successfully!");
     }
 }

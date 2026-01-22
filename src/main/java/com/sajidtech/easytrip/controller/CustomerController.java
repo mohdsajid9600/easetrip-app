@@ -50,11 +50,8 @@ public class CustomerController {
     @PutMapping("/customer/{id}/update")
     public ResponseEntity<String> updateCustomerInfo(@RequestBody CustomerRequest customerRequest,
                                      @PathVariable("id") int customerId){
-        boolean isUpdated = customerService.updateCustomerInfo(customerRequest, customerId);
-        if(isUpdated){
-            return ResponseEntity.status(HttpStatus.OK).body("Your Record updated Successfully!!");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body("Customer not found, Record not updated!");
+        customerService.updateCustomerInfo(customerRequest, customerId);
+        return ResponseEntity.status(HttpStatus.OK).body("Your Record updated Successfully!!");
     }
 
     @GetMapping("/customer/{id}/bookings")

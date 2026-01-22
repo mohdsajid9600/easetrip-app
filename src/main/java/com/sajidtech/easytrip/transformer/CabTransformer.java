@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.transformer;
 
+import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.dto.request.CabRequest;
 import com.sajidtech.easytrip.dto.response.CabResponse;
 import com.sajidtech.easytrip.model.Cab;
@@ -13,6 +14,7 @@ public class CabTransformer {
                 .cabNumber(cabRequest.getCabNumber())
                 .available(true)
                 .perKmRate(cabRequest.getPerKmRate())
+                .status(Status.ACTIVE)
                 .build();
     }
 
@@ -22,6 +24,7 @@ public class CabTransformer {
                 .cabModel(cab.getCabModel())
                 .available(cab.isAvailable())
                 .perKmRate(cab.getPerKmRate())
+                .status(cab.getStatus())
                 .driverResponse(DriverTransformer.driverToDriverResponse(driver))
                 .build();
     }
@@ -40,6 +43,7 @@ public class CabTransformer {
                 .cabNumber(cab.getCabNumber())
                 .cabModel(cab.getCabModel())
                 .perKmRate(cab.getPerKmRate())
+                .status(cab.getStatus())
                 .build();
     }
     public static CabResponse cabToCabResponseForCustomer(Cab cab, Driver driver){

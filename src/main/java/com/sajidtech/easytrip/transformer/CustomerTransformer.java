@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.transformer;
 
+import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.dto.request.CustomerRequest;
 import com.sajidtech.easytrip.dto.response.CustomerResponse;
 import com.sajidtech.easytrip.model.Customer;
@@ -12,6 +13,7 @@ public class CustomerTransformer {
                 .age(customerRequest.getAge())
                 .email(customerRequest.getEmail())
                 .gender(customerRequest.getGender())
+                .status(Status.ACTIVE)
                 .build();
     }
 
@@ -20,10 +22,15 @@ public class CustomerTransformer {
                 .name(customer.getName())
                 .age(customer.getAge())
                 .email(customer.getEmail())
+                .status(customer.getStatus())
                 .build();
     }
 
     public static CustomerResponse customerToCustomerResponseForDriver(Customer customer){
-        return customerToCustomerResponse(customer);
+        return CustomerResponse.builder()
+                .name(customer.getName())
+                .age(customer.getAge())
+                .email(customer.getEmail())
+                .build();
     }
 }

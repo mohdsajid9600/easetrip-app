@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.service;
 
+import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.Enum.TripStatus;
 import com.sajidtech.easytrip.dto.request.DriverRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
@@ -10,18 +11,22 @@ import com.sajidtech.easytrip.model.Booking;
 import com.sajidtech.easytrip.model.Cab;
 import com.sajidtech.easytrip.model.Customer;
 import com.sajidtech.easytrip.model.Driver;
+import com.sajidtech.easytrip.repository.BookingRepository;
+import com.sajidtech.easytrip.repository.CabRepository;
 import com.sajidtech.easytrip.repository.CustomerRepository;
 import com.sajidtech.easytrip.repository.DriverRepository;
 import com.sajidtech.easytrip.transformer.BookingTransformer;
 import com.sajidtech.easytrip.transformer.DriverTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class DriverService {
 
     @Autowired
@@ -30,35 +35,35 @@ public class DriverService {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    CabRepository cabRepository;
+
+    @Autowired
+    BookingRepository bookingRepository;
+
     public DriverResponse addDriverInfo(DriverRequest driverRequest) {
         Driver driver = DriverTransformer.driverRequestToDriver(driverRequest);
         Driver savedDriver = driverRepository.save(driver);
         return DriverTransformer.driverToDriverResponse(savedDriver);
     }
 
-    public DriverResponse getDriverById(int id) {
-        Driver driver = driverRepository.findById(id)
-                .orElseThrow(() -> new DriverNotFoundException("Driver ID Invalid with : "+id));
+    public DriverResponse getDriverById(int driverId) {
+        Driver driver = checkValidDriver(driverId);
         return DriverTransformer.driverToDriverResponse(driver);
     }
 
-    public boolean updateDriverInfo(DriverRequest driverRequest, int driverId) {
-        Optional<Driver> OptionalDriver = driverRepository.findById(driverId);
-        if(OptionalDriver.isEmpty()) return false;
-
-        Driver driver = OptionalDriver.get();
+    public void updateDriverInfo(DriverRequest driverRequest, int driverId) {
+        Driver driver = checkValidDriver(driverId);
 
         driver.setName(driverRequest.getName());
         driver.setAge(driverRequest.getAge());
         driver.setEmail(driverRequest.getEmail());
 
         driverRepository.save(driver);
-
-        return true;
     }
 
     public List<BookingResponse> getAllBookings(int driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver id is Invalid"));
+        Driver driver = checkValidDriver(driverId);
 
         return driver.getBooking().stream().map(booking->{
 
@@ -69,8 +74,7 @@ public class DriverService {
     }
 
     public List<BookingResponse> getAllCompletedBookings(int driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver id is Invalid"));
-
+        Driver driver = checkValidDriver(driverId);
         return driver.getBooking().stream().filter(booking-> booking.getTripStatus().equals(TripStatus.COMPLETED)).map(booking->{
 
             Customer customer = customerRepository.findByBookingId(booking.getBookingId());
@@ -80,8 +84,7 @@ public class DriverService {
     }
 
     public List<BookingResponse> getAllCancelledBookings(int driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver id is Invalid"));
-
+        Driver driver = checkValidDriver(driverId);
         return driver.getBooking().stream().filter(booking-> booking.getTripStatus().equals(TripStatus.CANCELLED)).map(booking->{
 
             Customer customer = customerRepository.findByBookingId(booking.getBookingId());
@@ -92,12 +95,35 @@ public class DriverService {
 
 
     public BookingResponse getAllInProgressBookings(int driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver id is Invalid"));
-
+        Driver driver = checkValidDriver(driverId);
         Booking progressBooking = driver.getBooking().stream().filter(booking-> booking.getTripStatus().equals(TripStatus.IN_PROGRESS)).findFirst()
                 .orElseThrow(()-> new BookingNotFound("Driver has no one Booking who is IN_PROGRESS"));
 
             Customer customer = customerRepository.findByBookingId(progressBooking.getBookingId());
             return BookingTransformer.bookingToBookingResponseForDriver(progressBooking, driver.getCab(),customer);
+    }
+
+    public void deleteDriverById(int driverId) {
+        Driver driver = checkValidDriver(driverId);
+        boolean hasActiveBooking = driver.getBooking().stream().anyMatch(booking -> booking.getTripStatus().equals(TripStatus.IN_PROGRESS));
+        if(hasActiveBooking){
+            throw new RuntimeException("Driver cannot be deleted because it has one Booking IN_PROGRESS");
+        }
+        Cab cab = driver.getCab();
+        if(cab != null){
+            cab.setAvailable(false);
+            cab.setStatus(Status.INACTIVE);
+        }
+        driver.setStatus(Status.INACTIVE);
+        driverRepository.save(driver);
+    }
+
+    private Driver checkValidDriver(int driverId) {
+        Driver driver = driverRepository.findById(driverId)
+                .orElseThrow(() -> new DriverNotFoundException("Driver ID Invalid with : "+driverId));
+        if(driver.getStatus() == Status.INACTIVE){
+            throw new RuntimeException("Driver is inactive. Access denied");
+        }
+        return driver;
     }
 }
