@@ -5,7 +5,7 @@ import com.sajidtech.easytrip.Enum.Status;
 import com.sajidtech.easytrip.Enum.TripStatus;
 import com.sajidtech.easytrip.dto.request.BookingRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
-import com.sajidtech.easytrip.emailTemplate.EmailTemplate;
+import com.sajidtech.easytrip.emails.EmailTemplate;
 import com.sajidtech.easytrip.exception.*;
 import com.sajidtech.easytrip.model.Booking;
 import com.sajidtech.easytrip.model.Cab;
@@ -65,8 +65,8 @@ public class BookingService {
 
         BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(savedBooking,availableCab,savedDriver,savedCustomer);
 
-//    //    EmailSender to the customer who ever booked the cab
-//        sendEmail(bookingResponse);
+    //  EmailSender to the customer who ever booked the cab
+        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.IN_PROGRESS), bookingResponse, TripStatus.IN_PROGRESS);
 
         return bookingResponse;
     }
@@ -93,15 +93,22 @@ public class BookingService {
         booking.setTripStatus(TripStatus.CANCELLED);
         driver.getCab().setAvailable(true);
         driverRepository.save(driver);
+        BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(booking,driver.getCab(),driver,customer);
+        //  EmailSender to the customer who ever cancel the cab
+        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.CANCELLED), bookingResponse, TripStatus.CANCELLED);
     }
 
     public void completeBookingByDriver(int driverId) {
        Driver driver = checkValidDriver(driverId);
        Booking booking = getProgressBookingByDriver(driver);
+       Customer customer = customerRepository.findCustomerByBookingId(booking.getBookingId());
 
        booking.setTripStatus(TripStatus.COMPLETED);
        driver.getCab().setAvailable(true);
        driverRepository.save(driver);
+       BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(booking,driver.getCab(),driver,customer);
+       //  EmailSender to the customer who ever booked the cab
+        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.COMPLETED), bookingResponse, TripStatus.COMPLETED);
     }
 
     private Booking getProgressBookingByDriver(Driver driver) {
@@ -130,13 +137,16 @@ public class BookingService {
         return customer;
     }
 
-    private void sendEmail(BookingResponse booking){
-        String formate = EmailTemplate.bookingConfirmationTemplate(booking);
+    private void sendEmailToCustomer(String subject, BookingResponse bookingResponse, TripStatus tripStatus){
+        String formate = EmailTemplate.getEmailTemplate(
+                tripStatus,
+                bookingResponse
+        );
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom("easetriptrevler@gmail.com");
-        simpleMailMessage.setTo(booking.getCustomerResponse().getEmail());
-        simpleMailMessage.setSubject("EasyTrip Booking Confirmation.");
+        simpleMailMessage.setTo(bookingResponse.getCustomerResponse().getEmail());
+        simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(formate);
         javaMailSender.send(simpleMailMessage);
     }
