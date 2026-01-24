@@ -50,7 +50,7 @@ public class BookingService {
         }
 
         Cab availableCab  = cabRepository.getAvailableCab().orElseThrow(()->
-                new CabUnavailabaleException(" Sorry !!  Cab Unavailable at this time"));
+                new CabUnavailableException(" Sorry !!  Cab Unavailable at this time"));
 
         Driver driver  = driverRepository.availableCabDriver(availableCab.getCabId());
         Booking booking = BookingTransformer.bookingRequestToBooking(bookingRequest, availableCab.getPerKmRate());
@@ -65,7 +65,7 @@ public class BookingService {
 
         BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(savedBooking,availableCab,savedDriver,savedCustomer);
 
-    //  EmailSender to the customer who ever booked the cab
+      // EmailSender to the customer who ever booked the cab
         sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.IN_PROGRESS), bookingResponse, TripStatus.IN_PROGRESS);
 
         return bookingResponse;
