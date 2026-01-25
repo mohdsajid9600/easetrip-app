@@ -1,6 +1,6 @@
 package com.sajidtech.easytrip.transformer;
 
-import com.sajidtech.easytrip.Enum.Status;
+import com.sajidtech.easytrip.enums.Status;
 import com.sajidtech.easytrip.dto.request.CabRequest;
 import com.sajidtech.easytrip.dto.response.CabResponse;
 import com.sajidtech.easytrip.model.Cab;

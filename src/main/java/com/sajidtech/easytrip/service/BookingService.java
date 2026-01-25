@@ -1,8 +1,8 @@
 package com.sajidtech.easytrip.service;
 
 
-import com.sajidtech.easytrip.Enum.Status;
-import com.sajidtech.easytrip.Enum.TripStatus;
+import com.sajidtech.easytrip.enums.Status;
+import com.sajidtech.easytrip.enums.TripStatus;
 import com.sajidtech.easytrip.dto.request.BookingRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
 import com.sajidtech.easytrip.emails.EmailTemplate;
@@ -66,7 +66,7 @@ public class BookingService {
         BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(savedBooking,availableCab,savedDriver,savedCustomer);
 
       // EmailSender to the customer who ever booked the cab
-        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.IN_PROGRESS), bookingResponse, TripStatus.IN_PROGRESS);
+//        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.IN_PROGRESS), bookingResponse, TripStatus.IN_PROGRESS);
 
         return bookingResponse;
     }
@@ -95,7 +95,7 @@ public class BookingService {
         driverRepository.save(driver);
         BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(booking,driver.getCab(),driver,customer);
         //  EmailSender to the customer who ever cancel the cab
-        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.CANCELLED), bookingResponse, TripStatus.CANCELLED);
+//        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.CANCELLED), bookingResponse, TripStatus.CANCELLED);
     }
 
     public void completeBookingByDriver(int driverId) {
@@ -108,17 +108,17 @@ public class BookingService {
        driverRepository.save(driver);
        BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(booking,driver.getCab(),driver,customer);
        //  EmailSender to the customer who ever booked the cab
-        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.COMPLETED), bookingResponse, TripStatus.COMPLETED);
+//        sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.COMPLETED), bookingResponse, TripStatus.COMPLETED);
     }
 
     private Booking getProgressBookingByDriver(Driver driver) {
         return driver.getBooking().stream().filter(b -> b.getTripStatus().equals(TripStatus.IN_PROGRESS))
-                .findAny().orElseThrow(() -> new BookingNotFound("No one Booking is available in Driver List to the completion"));
+                .findAny().orElseThrow(() -> new BookingNotFoundException("No one Booking is available in Driver List to the completion"));
     }
 
     private Booking getProgressBookingByCustomer(Customer customer) {
         return customer.getBooking().stream().filter((b) -> b.getTripStatus().equals(TripStatus.IN_PROGRESS)).findAny()
-                .orElseThrow(()-> new BookingNotFound("Customer has no one Booking which is IN_PROGRESS"));
+                .orElseThrow(()-> new BookingNotFoundException("Customer has no one Booking which is IN_PROGRESS"));
     }
     private Driver checkValidDriver(int driverId) {
        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Invalid Driver ID"));

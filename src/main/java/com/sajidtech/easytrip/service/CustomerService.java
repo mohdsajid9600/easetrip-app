@@ -1,12 +1,12 @@
 package com.sajidtech.easytrip.service;
 
-import com.sajidtech.easytrip.Enum.Gender;
-import com.sajidtech.easytrip.Enum.Status;
-import com.sajidtech.easytrip.Enum.TripStatus;
+import com.sajidtech.easytrip.enums.Gender;
+import com.sajidtech.easytrip.enums.Status;
+import com.sajidtech.easytrip.enums.TripStatus;
 import com.sajidtech.easytrip.dto.request.CustomerRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
 import com.sajidtech.easytrip.dto.response.CustomerResponse;
-import com.sajidtech.easytrip.exception.BookingNotFound;
+import com.sajidtech.easytrip.exception.BookingNotFoundException;
 import com.sajidtech.easytrip.exception.CustomerNotFoundException;
 import com.sajidtech.easytrip.model.Booking;
 import com.sajidtech.easytrip.model.Customer;
@@ -85,7 +85,7 @@ public class CustomerService {
         Customer customer = checkValidCustomer(customerId);
         Booking progressBooking = customer.getBooking().stream()
                 .filter(booking -> booking.getTripStatus().equals(TripStatus.IN_PROGRESS))
-                .findFirst().orElseThrow(()-> new BookingNotFound("Customer has no one Booking who are IN_PROGRESS"));
+                .findFirst().orElseThrow(()-> new BookingNotFoundException("Customer has no one Booking who are IN_PROGRESS"));
         return getBookingResponseByBooking(progressBooking);
     }
 

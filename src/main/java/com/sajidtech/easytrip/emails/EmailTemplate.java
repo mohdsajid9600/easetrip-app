@@ -1,6 +1,6 @@
 package com.sajidtech.easytrip.emails;
 
-import com.sajidtech.easytrip.Enum.TripStatus;
+import com.sajidtech.easytrip.enums.TripStatus;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
 
 public class EmailTemplate {

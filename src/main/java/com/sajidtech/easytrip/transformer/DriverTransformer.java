@@ -1,6 +1,6 @@
 package com.sajidtech.easytrip.transformer;
 
-import com.sajidtech.easytrip.Enum.Status;
+import com.sajidtech.easytrip.enums.Status;
 import com.sajidtech.easytrip.dto.request.DriverRequest;
 import com.sajidtech.easytrip.dto.response.DriverResponse;
 import com.sajidtech.easytrip.model.Driver;

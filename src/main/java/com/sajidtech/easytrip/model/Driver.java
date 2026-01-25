@@ -1,6 +1,6 @@
 package com.sajidtech.easytrip.model;
 
-import com.sajidtech.easytrip.Enum.Status;
+import com.sajidtech.easytrip.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

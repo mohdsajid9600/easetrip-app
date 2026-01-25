@@ -1,18 +1,16 @@
 package com.sajidtech.easytrip.service;
 
-import com.sajidtech.easytrip.Enum.Status;
-import com.sajidtech.easytrip.Enum.TripStatus;
+import com.sajidtech.easytrip.enums.Status;
+import com.sajidtech.easytrip.enums.TripStatus;
 import com.sajidtech.easytrip.dto.request.DriverRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
 import com.sajidtech.easytrip.dto.response.DriverResponse;
-import com.sajidtech.easytrip.exception.BookingNotFound;
+import com.sajidtech.easytrip.exception.BookingNotFoundException;
 import com.sajidtech.easytrip.exception.DriverNotFoundException;
 import com.sajidtech.easytrip.model.Booking;
 import com.sajidtech.easytrip.model.Cab;
 import com.sajidtech.easytrip.model.Customer;
 import com.sajidtech.easytrip.model.Driver;
-import com.sajidtech.easytrip.repository.BookingRepository;
-import com.sajidtech.easytrip.repository.CabRepository;
 import com.sajidtech.easytrip.repository.CustomerRepository;
 import com.sajidtech.easytrip.repository.DriverRepository;
 import com.sajidtech.easytrip.transformer.BookingTransformer;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,7 +77,7 @@ public class DriverService {
         Driver driver = checkValidDriver(driverId);
         Booking progressBooking = driver.getBooking().stream()
                 .filter(booking-> booking.getTripStatus().equals(TripStatus.IN_PROGRESS)).findFirst()
-                .orElseThrow(()-> new BookingNotFound("Driver has no one Booking who is IN_PROGRESS"));
+                .orElseThrow(()-> new BookingNotFoundException("Driver has no one Booking who is IN_PROGRESS"));
         return getBookingResponseByBooking(progressBooking, driver);
     }
 

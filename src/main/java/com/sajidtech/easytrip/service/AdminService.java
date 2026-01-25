@@ -1,12 +1,12 @@
 package com.sajidtech.easytrip.service;
 
-import com.sajidtech.easytrip.Enum.Status;
-import com.sajidtech.easytrip.Enum.TripStatus;
+import com.sajidtech.easytrip.enums.Status;
+import com.sajidtech.easytrip.enums.TripStatus;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
 import com.sajidtech.easytrip.dto.response.CabResponse;
 import com.sajidtech.easytrip.dto.response.CustomerResponse;
 import com.sajidtech.easytrip.dto.response.DriverResponse;
-import com.sajidtech.easytrip.exception.BookingNotFound;
+import com.sajidtech.easytrip.exception.BookingNotFoundException;
 import com.sajidtech.easytrip.exception.CabNotFoundException;
 import com.sajidtech.easytrip.exception.CustomerNotFoundException;
 import com.sajidtech.easytrip.exception.DriverNotFoundException;
@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -231,7 +230,7 @@ public class AdminService {
     }
 
     private Booking getAndThrowBooking(int bookingId) {
-        return bookingRepository.findById(bookingId).orElseThrow(()-> new BookingNotFound("Booking id is Invalid"));
+        return bookingRepository.findById(bookingId).orElseThrow(()-> new BookingNotFoundException("Booking id is Invalid"));
     }
 }
 

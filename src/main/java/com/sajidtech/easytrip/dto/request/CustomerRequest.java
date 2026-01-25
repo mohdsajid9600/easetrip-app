@@ -1,6 +1,6 @@
 package com.sajidtech.easytrip.dto.request;
 
-import com.sajidtech.easytrip.Enum.Gender;
+import com.sajidtech.easytrip.enums.Gender;
 
 import lombok.Data;
 

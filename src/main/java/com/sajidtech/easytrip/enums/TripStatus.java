@@ -1,4 +1,4 @@
-package com.sajidtech.easytrip.Enum;
+package com.sajidtech.easytrip.enums;
 
 public enum TripStatus {
 

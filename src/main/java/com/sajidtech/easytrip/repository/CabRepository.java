@@ -1,7 +1,7 @@
 package com.sajidtech.easytrip.repository;
 
 
-import com.sajidtech.easytrip.Enum.Status;
+import com.sajidtech.easytrip.enums.Status;
 import com.sajidtech.easytrip.model.Cab;
 import com.sajidtech.easytrip.model.Driver;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface CabRepository extends JpaRepository<Cab, Integer> {
 
-    @Query("select c from Cab c where c.available = true and c.status = com.sajidtech.easytrip.Enum.Status.ACTIVE order by rand() limit 1")
+    @Query("select c from Cab c where c.available = true and c.status = com.sajidtech.easytrip.enums.Status.ACTIVE order by rand() limit 1")
     Optional<Cab> getAvailableCab();
 
     @Query("select c from Cab c where c.available = true")
