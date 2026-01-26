@@ -1,9 +1,6 @@
 package com.sajidtech.easytrip.controller;
 
-import com.sajidtech.easytrip.dto.response.BookingResponse;
-import com.sajidtech.easytrip.dto.response.CabResponse;
-import com.sajidtech.easytrip.dto.response.CustomerResponse;
-import com.sajidtech.easytrip.dto.response.DriverResponse;
+import com.sajidtech.easytrip.dto.response.*;
 import com.sajidtech.easytrip.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,84 +13,89 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
+    // Admin service dependency
     @Autowired
     private AdminService adminService;
 
 //_____________________________________________________ADMIN ACTION ON CUSTOMERS_______________________________________________________________
 
+    // Get all customers
     @GetMapping("/customers")
-    public ResponseEntity<List<CustomerResponse>> getAllCustomer(){
+    public ResponseEntity<ApiResponse<List<CustomerResponse>>> getAllCustomer(){
        List<CustomerResponse> responseList = adminService.getAllCustomer();
-       return ResponseEntity.ok(responseList);
+       return ResponseEntity.ok(ApiResponse.success("Customers fetched",responseList));
     }
 
+    // Get customer by ID
     @GetMapping("/customer/search")
-    public ResponseEntity<CustomerResponse> getCustomerById(@RequestParam("id") int customerId){
+    public ResponseEntity<ApiResponse<CustomerResponse>> getCustomerById(@RequestParam("id") int customerId){
         CustomerResponse customerResponse = adminService.getCustomerById(customerId);
-        return ResponseEntity.status(HttpStatus.OK).body(customerResponse);
+        return ResponseEntity.ok(ApiResponse.success("Customer found", customerResponse));
     }
 
+    // Get active customers
     @GetMapping("/customers/active")
-    public ResponseEntity<List<CustomerResponse>> getActiveCustomers(){
+    public ResponseEntity<ApiResponse<List<CustomerResponse>>> getActiveCustomers(){
         List<CustomerResponse> responseList = adminService.getActiveCustomers();
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Active customers",responseList));
     }
 
+    // Get inactive customers
     @GetMapping("/customers/inactive")
-    public ResponseEntity<List<CustomerResponse>> getInactiveCustomers(){
+    public ResponseEntity<ApiResponse<List<CustomerResponse>>> getInactiveCustomers(){
         List<CustomerResponse> responseList = adminService.getInactiveCustomers();
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Inactive customers", responseList));
     }
 
     @PutMapping("/customer/{id}/active")
-    public ResponseEntity<CustomerResponse> activeCustomer(@PathVariable("id") int customerId){
+    public ResponseEntity<ApiResponse<CustomerResponse>> activeCustomer(@PathVariable("id") int customerId){
         CustomerResponse customerResponse = adminService.activeCustomer(customerId);
-        return ResponseEntity.status(HttpStatus.OK).body(customerResponse);
+        return ResponseEntity.ok(ApiResponse.success("Active Customer Now", customerResponse));
     }
 
     @PutMapping("/customer/{id}/inactive")
-    public ResponseEntity<CustomerResponse> inActiveCustomer(@PathVariable("id") int customerId){
+    public ResponseEntity<ApiResponse<CustomerResponse>> inActiveCustomer(@PathVariable("id") int customerId){
         CustomerResponse customerResponse = adminService.inActiveCustomer(customerId);
-        return ResponseEntity.status(HttpStatus.OK).body(customerResponse);
+        return ResponseEntity.ok(ApiResponse.success("Customer Inactive Now", customerResponse));
     }
 
 //_____________________________________________________ADMIN ACTION ON DRIVERS________________________________________________________________
 
 
     @GetMapping("/drivers")
-    public ResponseEntity<List<DriverResponse>> getAllDrivers(){
+    public ResponseEntity<ApiResponse<List<DriverResponse>>> getAllDrivers(){
         List<DriverResponse> responseList = adminService.getAllDrivers();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Registered Drivers", responseList));
     }
 
     @GetMapping("/driver/search")
-    public ResponseEntity<DriverResponse> getDriverById(@RequestParam("id") int driverId){
+    public ResponseEntity<ApiResponse<DriverResponse>> getDriverById(@RequestParam("id") int driverId){
         DriverResponse driverResponse = adminService.getDriverById(driverId);
-        return ResponseEntity.status(HttpStatus.OK).body(driverResponse);
+        return ResponseEntity.ok(ApiResponse.success("Driver Found", driverResponse));
     }
 
     @GetMapping("/drivers/active")
-    public ResponseEntity<List<DriverResponse>> getActiveDrivers(){
+    public ResponseEntity<ApiResponse<List<DriverResponse>>> getActiveDrivers(){
         List<DriverResponse> responseList = adminService.getActiveDrivers();
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Active Drivers", responseList));
     }
 
     @GetMapping("/drivers/inactive")
-    public ResponseEntity<List<DriverResponse>> getInactiveDrivers(){
+    public ResponseEntity<ApiResponse<List<DriverResponse>>> getInactiveDrivers(){
         List<DriverResponse> responseList = adminService.getInactiveDrivers();
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Inactive Drivers", responseList));
     }
 
     @PutMapping("/driver/{id}/active")
-    public ResponseEntity<DriverResponse> activeDriver(@PathVariable("id") int driverId){
+    public ResponseEntity<ApiResponse<DriverResponse>> activeDriver(@PathVariable("id") int driverId){
         DriverResponse driverResponse = adminService.activeDriver(driverId);
-        return ResponseEntity.status(HttpStatus.OK).body(driverResponse);
+        return ResponseEntity.ok(ApiResponse.success("Driver Activated", driverResponse));
     }
 
     @PutMapping("/driver/{id}/inactive")
-    public ResponseEntity<DriverResponse> inActiveDriver(@PathVariable("id") int driverId){
+    public ResponseEntity<ApiResponse<DriverResponse>> inActiveDriver(@PathVariable("id") int driverId){
         DriverResponse driverResponse = adminService.inActiveDriver(driverId);
-        return ResponseEntity.status(HttpStatus.OK).body(driverResponse);
+        return ResponseEntity.ok(ApiResponse.success("Driver Inactivated", driverResponse));
     }
 
 
@@ -101,39 +103,39 @@ public class AdminController {
 
 
     @GetMapping("/cabs")
-    public ResponseEntity<List<CabResponse>> getAllCabs(){
+    public ResponseEntity<ApiResponse<List<CabResponse>>> getAllCabs(){
         List<CabResponse> responseList = adminService.getAllCabs();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Registered Cabs", responseList));
     }
 
     @GetMapping("/cab/search")
-    public ResponseEntity<CabResponse> getCabById(@RequestParam("id") int cabId){
+    public ResponseEntity<ApiResponse<CabResponse>> getCabById(@RequestParam("id") int cabId){
         CabResponse cabResponse = adminService.getCabById(cabId);
-        return ResponseEntity.status(HttpStatus.OK).body(cabResponse);
+        return ResponseEntity.ok(ApiResponse.success("Cab Found", cabResponse));
     }
 
     @GetMapping("/cabs/active")
-    public ResponseEntity<List<CabResponse>> getActiveCabs(){
+    public ResponseEntity<ApiResponse<List<CabResponse>>> getActiveCabs(){
         List<CabResponse> responseList = adminService.getActiveCabs();
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Active Cabs",responseList));
     }
 
     @GetMapping("/cabs/inactive")
-    public ResponseEntity<List<CabResponse>> getInactiveCabs(){
+    public ResponseEntity<ApiResponse<List<CabResponse>>> getInactiveCabs(){
         List<CabResponse> responseList = adminService.getInactiveCabs();
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Inactive Cabs", responseList));
     }
 
     @GetMapping("/cabs/available")
-    public ResponseEntity<List<CabResponse>> getAvailableCabs(){
+    public ResponseEntity<ApiResponse<List<CabResponse>>> getAvailableCabs(){
         List<CabResponse> responseList = adminService.getAvailableCabs();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Available Cabs", responseList));
     }
 
     @GetMapping("/cabs/unavailable")
-    public ResponseEntity<List<CabResponse>> getUnavailableCabs(){
+    public ResponseEntity<ApiResponse<List<CabResponse>>> getUnavailableCabs(){
         List<CabResponse> responseList = adminService.getUnavailableCabs();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Unavailable Cabs", responseList));
     }
 
 
@@ -141,44 +143,44 @@ public class AdminController {
 
 
     @GetMapping("/bookings")
-    public ResponseEntity<List<BookingResponse>> getAllBookings(){
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getAllBookings(){
         List<BookingResponse> responseList = adminService.getAllBookings();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Bookings fetched", responseList));
     }
 
     @GetMapping("/booking/search")
-    public ResponseEntity<BookingResponse> getBookingById(@RequestParam("id") int bookingId){
+    public ResponseEntity<ApiResponse<BookingResponse>> getBookingById(@RequestParam("id") int bookingId){
         BookingResponse bookingResponse = adminService.getBookingById(bookingId);
-        return ResponseEntity.status(HttpStatus.OK).body(bookingResponse);
+        return ResponseEntity.ok(ApiResponse.success("Booking Found", bookingResponse));
     }
 
     @GetMapping("/bookings/customer")
-    public ResponseEntity<List<BookingResponse>> getBookingsByCustomer(@RequestParam("id") int customerId){
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getBookingsByCustomer(@RequestParam("id") int customerId){
         List<BookingResponse> responseList = adminService.getBookingsByCustomer(customerId);
-        return ResponseEntity.status(HttpStatus.OK).body(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Customers Bookings", responseList));
     }
 
     @GetMapping("/bookings/driver")
-    public ResponseEntity<List<BookingResponse>> getBookingsByDriver(@RequestParam("id") int driverId){
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getBookingsByDriver(@RequestParam("id") int driverId){
         List<BookingResponse> responseList = adminService.getBookingsByDriver(driverId);
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Driver Bookings", responseList));
     }
 
     @GetMapping("/bookings/active")
-    public ResponseEntity<List<BookingResponse>> getActiveBookings(){
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getActiveBookings(){
         List<BookingResponse> responseList = adminService.getActiveBookings();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Active Bookings", responseList));
     }
 
     @GetMapping("/bookings/complete")
-    public ResponseEntity<List<BookingResponse>> getCompletedBookings(){
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getCompletedBookings(){
         List<BookingResponse> responseList = adminService.getCompletedBookings();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Completed Bookings", responseList));
     }
 
     @GetMapping("/bookings/cancel")
-    public ResponseEntity<List<BookingResponse>> getCancelledBookings(){
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getCancelledBookings(){
         List<BookingResponse> responseList = adminService.getCancelledBookings();
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(ApiResponse.success("Cancelled Bookings", responseList));
     }
 }

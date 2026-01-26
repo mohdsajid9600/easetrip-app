@@ -32,6 +32,21 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND
         );
     }
+    @ExceptionHandler(CabUnavailableException.class)
+    public ResponseEntity<ApiErrorResponse> handleCabUnavailable(CabUnavailableException ex) {
+        return new ResponseEntity<>(
+                new ApiErrorResponse(false, ex.getMessage(), "CAB_SERVICE_UNAVAILABLE", 503),
+                HttpStatus.SERVICE_UNAVAILABLE
+        );
+    }
+
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleBookingNotFound(BookingNotFoundException ex) {
+        return new ResponseEntity<>(
+                new ApiErrorResponse(false, ex.getMessage(), "CAB_NOT_FOUND", 404),
+                HttpStatus.NOT_FOUND
+        );
+    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiErrorResponse> handleBusiness(RuntimeException ex) {

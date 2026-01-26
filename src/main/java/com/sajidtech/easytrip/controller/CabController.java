@@ -1,10 +1,10 @@
 package com.sajidtech.easytrip.controller;
 
 import com.sajidtech.easytrip.dto.request.CabRequest;
+import com.sajidtech.easytrip.dto.response.ApiResponse;
 import com.sajidtech.easytrip.dto.response.CabResponse;
 import com.sajidtech.easytrip.service.CabService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,26 +14,31 @@ import java.util.List;
 @RequestMapping("/cab")
 public class CabController {
 
+
+    // Cab service dependency
     @Autowired
     private CabService cabService;
 
+    // Register cab for driver
     @PostMapping("/driver/{id}/register")
-    public ResponseEntity<CabResponse> createCab(@RequestBody CabRequest cabRequest, @PathVariable("id") int driverId){
+    public ResponseEntity<ApiResponse<CabResponse>> createCab(@RequestBody CabRequest cabRequest, @PathVariable("id") int driverId){
         CabResponse cabResponse =  cabService.createCab(cabRequest, driverId);
-        return new ResponseEntity<>(cabResponse, HttpStatus.CREATED);
+        return ResponseEntity.ok(ApiResponse.success("Cab registered", cabResponse));
     }
 
+    // Update cab by driver
     @PutMapping("/driver/{id}/update")
-    public ResponseEntity<CabResponse> updateCabByDriver(@RequestBody CabRequest cabRequest,
+    public ResponseEntity<ApiResponse<CabResponse>> updateCabByDriver(@RequestBody CabRequest cabRequest,
                                                          @PathVariable("id") int driverId){
         CabResponse cabResponse = cabService.updateCabByDriver(cabRequest, driverId);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(cabResponse);
+        return ResponseEntity.ok(ApiResponse.success("Cab updated", cabResponse));
     }
 
+    // Get all available cabs
     @GetMapping("/search/available")
-    public ResponseEntity<List<CabResponse>> getAllAvailableCabs(){
+    public ResponseEntity<ApiResponse<List<CabResponse>>> getAllAvailableCabs(){
         List<CabResponse> responses = cabService.getAllAvailableCabs();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(ApiResponse.success("Available cabs", responses));
     }
 }

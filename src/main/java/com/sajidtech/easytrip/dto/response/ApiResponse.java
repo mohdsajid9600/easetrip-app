@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     private boolean success;
@@ -21,7 +23,7 @@ public class ApiResponse<T> {
         this.timestamp = LocalDateTime.now();
     }
 
-    // Factory methods (best practice)
+    // Factory methods
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(true, message, data);
     }

@@ -50,7 +50,7 @@ public class BookingService {
         }
 
         Cab availableCab  = cabRepository.getAvailableCab().orElseThrow(()->
-                new CabUnavailableException(" Sorry !!  Cab Unavailable at this time"));
+                new CabUnavailableException("Cab unavailable at this time"));
 
         Driver driver  = driverRepository.availableCabDriver(availableCab.getCabId());
         Booking booking = BookingTransformer.bookingRequestToBooking(bookingRequest, availableCab.getPerKmRate());
