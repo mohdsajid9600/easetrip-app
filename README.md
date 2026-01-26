@@ -19,7 +19,7 @@ The application also **supports email notifications** to inform customers about 
 - REST API design
 - Entity–DTO transformation
 - Status based filtering
-- Exception handling
+- Exception handling globally
 - Role based operations (Admin, Driver, Customer)
 
 ## 🚀 Features
@@ -28,7 +28,7 @@ The application also **supports email notifications** to inform customers about 
 
 - Customer registration
 - Update customer profile
-- View all customers
+- Fetch customer details
 - Search customers by different criteria
 - View customer bookings (all, active, completed, cancelled)
 
@@ -36,7 +36,7 @@ The application also **supports email notifications** to inform customers about 
 
 - Driver registration
 - Update driver details
-- View all drivers
+- Fetch driver details
 - Search drivers
 - View driver bookings (all, in-progress, completed, cancelled)
 
@@ -114,7 +114,7 @@ easetrip
 │   │   │       ├── controller
 │   │   │       ├── dto
 │   │   │       ├── emails
-│   │   │       ├── Enum
+│   │   │       ├── enums
 │   │   │       ├── exception
 │   │   │       ├── model
 │   │   │       ├── repository
@@ -151,7 +151,7 @@ Used for request and response payloads.
 ### 🔹 emails
 Contains email templates and email related logic (booking confirmation, cancellation, etc.).
 
-### 🔹 Enum
+### 🔹 enums
 Contains all enums like:
 BookingStatus, UserRole, PaymentStatus, etc.
 
@@ -178,15 +178,6 @@ Contains database configuration and application settings.
 ## ⚙️ Other Important Files
 ### 🔹 pom.xml
 Maven configuration file containing dependencies and plugins.
-
-## 📌 API Endpoints
-
-Booking APIs
-Method	Endpoint	Description
-POST	/bookings	Create new booking
-GET	/bookings/{id}	Get booking by ID
-DELETE	/bookings/{id}	Cancel booking
-PUT	/bookings/{id}/complete	Complete trip
 
 ## 📧 Email Notification
 
@@ -223,27 +214,26 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 ## ⚙ How to Run the Project
 
  **1️. Clone repository**
-
-``` git clone https://github.com/mohdsajid9600/easetrip-app.git ```
+```  git clone https://github.com/mohdsajid9600/easetrip-app.git  ```
 
 **2️. Open project in IntelliJ / Eclipse**
-**3. Configure database in application.properties**
-**4. Run the application**
-**5. Go to project directory**
 
-```cd easetrip-app```
+**3. Configure database in application.properties**
+
+**4. Run the application**
+
+**5. Go to project directory**
+```  cd easetrip-app  ```
 
 **6. Build project**
-
-```mvn clean install```
+```  mvn clean install  ```
 
 **7. Run application**
-
-```mvn spring-boot:run```
+```  mvn spring-boot:run  ```
 
 ## Application will run on:
 
-```http://localhost:8080```
+```  http://localhost:8080  ```
 
 ## 🧪 API Testing
 
@@ -348,15 +338,20 @@ Use Postman or Swagger UI to test APIs.
 ## 📈 Future Enhancements
 
 **✔ JWT Authentication**
+
 **✔ Swagger Documentation**
+
 **✔ Payment Gateway Integration**
+
 **✔ Spring Security**
+
 **✔ Frontend (Angular/React)**
 
 ## 👨‍💻 Developer
 
-**Mohd Sajid**
-**Java Backend Developer (Spring Boot)**
+**Er. Mohd Sajid**
+
+**Java Backend Developer**
 
 ## 📄 License
 
