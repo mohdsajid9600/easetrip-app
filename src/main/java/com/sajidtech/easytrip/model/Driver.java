@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="driver")
+@Table(name="drivers")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,6 +31,10 @@ public class Driver {
 
     @Enumerated(value = EnumType.STRING)
     private Status status;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "driver_id")

@@ -1,6 +1,7 @@
 package com.sajidtech.easytrip.controller;
 
 import com.sajidtech.easytrip.dto.response.*;
+import com.sajidtech.easytrip.enums.Gender;
 import com.sajidtech.easytrip.service.AdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,20 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Customer found", customerResponse));
     }
 
+    // Search by gender and age
+    @GetMapping("/customers/search")
+    public ResponseEntity<ApiResponse<List<CustomerResponse>>> getAllByGenderAndAge(@RequestParam("gender") Gender gender,
+                                                                                    @RequestParam("age") int age){
+        List<CustomerResponse> responses = this.adminService.getAllByGenderAndAge(gender, age);
+        return ResponseEntity.ok(ApiResponse.success("Customers fetched", responses));
+    }
+
+    // Get customers above age
+    @GetMapping("/customers/search/greater")
+    public ResponseEntity<ApiResponse<List<CustomerResponse>>> getAllGreaterThenAge(@RequestParam("age") int age){
+        List<CustomerResponse> responses = this.adminService.getAllGreaterThenAge(age);
+        return ResponseEntity.ok(ApiResponse.success("Filtered customers", responses));
+    }
     // Get active customers
     @GetMapping("/customers/active")
     public ResponseEntity<ApiResponse<List<CustomerResponse>>> getActiveCustomers(){

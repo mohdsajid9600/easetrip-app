@@ -1,5 +1,6 @@
 package com.sajidtech.easytrip.service.impl;
 
+import com.sajidtech.easytrip.enums.Gender;
 import com.sajidtech.easytrip.enums.Status;
 import com.sajidtech.easytrip.enums.TripStatus;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -52,6 +54,16 @@ public class AdminServiceImpl implements AdminService {
     public CustomerResponse getCustomerById(int customerId) {
         Customer customer = getAndThrowCustomer(customerId);
         return CustomerTransformer.customerToCustomerResponse(customer);
+    }
+
+    public List<CustomerResponse> getAllByGenderAndAge(Gender gender, int age) {
+        List<Customer> customers = customerRepository.findByGenderAndAge(gender, age);
+        return customers.stream().map(CustomerTransformer::customerToCustomerResponse).collect(Collectors.toList());
+    }
+
+    public List<CustomerResponse> getAllGreaterThenAge(int age) {
+        List<Customer> customers = customerRepository.getAllGreaterThenAge(age);
+        return customers.stream().map(CustomerTransformer::customerToCustomerResponse).collect(Collectors.toList());
     }
 
     public List<CustomerResponse> getActiveCustomers() {

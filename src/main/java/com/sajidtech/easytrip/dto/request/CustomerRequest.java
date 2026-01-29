@@ -13,9 +13,9 @@ public class CustomerRequest {
     @Min(value = 15, message = "Age must be at least 18")
     @Max(value = 90, message = "Age not exceed more then 90")
     private int age;
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be a valid email address")
-    private String email;
+//    @NotBlank(message = "Email is required")
+//    @Email(message = "Email must be a valid email address")
+//    private String email;
     @NotNull(message = "Gender is required")
     private Gender gender;
 }

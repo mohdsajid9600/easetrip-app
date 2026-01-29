@@ -4,6 +4,7 @@ import com.sajidtech.easytrip.dto.response.BookingResponse;
 import com.sajidtech.easytrip.dto.response.CabResponse;
 import com.sajidtech.easytrip.dto.response.CustomerResponse;
 import com.sajidtech.easytrip.dto.response.DriverResponse;
+import com.sajidtech.easytrip.enums.Gender;
 
 import java.util.List;
 
@@ -12,6 +13,10 @@ public interface AdminService {
     List<CustomerResponse> getAllCustomer();
 
     CustomerResponse getCustomerById(int customerId);
+
+    List<CustomerResponse> getAllByGenderAndAge(Gender gender, int age);
+
+    List<CustomerResponse> getAllGreaterThenAge(int age);
 
     List<CustomerResponse> getActiveCustomers();
 

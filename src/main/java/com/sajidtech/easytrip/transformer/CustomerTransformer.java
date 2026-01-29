@@ -11,7 +11,6 @@ public class CustomerTransformer {
         return Customer.builder()
                 .name(customerRequest.getName())
                 .age(customerRequest.getAge())
-                .email(customerRequest.getEmail())
                 .gender(customerRequest.getGender())
                 .status(Status.ACTIVE)
                 .build();

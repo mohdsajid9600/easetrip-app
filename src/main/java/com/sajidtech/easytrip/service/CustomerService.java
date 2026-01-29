@@ -3,29 +3,24 @@ package com.sajidtech.easytrip.service;
 import com.sajidtech.easytrip.dto.request.CustomerRequest;
 import com.sajidtech.easytrip.dto.response.BookingResponse;
 import com.sajidtech.easytrip.dto.response.CustomerResponse;
-import com.sajidtech.easytrip.enums.Gender;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    CustomerResponse createCustomer(CustomerRequest customerRequest);
+    CustomerResponse createProfile(CustomerRequest customerRequest, String email );
 
-    CustomerResponse getCustomerById(int customerId);
+    CustomerResponse getCustomerInfo(String email);
 
-    List<CustomerResponse> getAllByGenderAndAge(Gender gender, int age);
+    void updateCustomerInfo(CustomerRequest customerRequest, String email);
 
-    List<CustomerResponse> getAllGreaterThenAge(int age);
+    List<BookingResponse> getAllBookings(String email);
 
-    void updateCustomerInfo(CustomerRequest customerRequest, int customerId);
+    List<BookingResponse> getAllCompletedBookings(String email);
 
-    List<BookingResponse> getAllBookings(int customerId);
+    List<BookingResponse> getAllCancelledBookings(String email);
 
-    List<BookingResponse> getAllCompletedBookings(int customerId);
+    BookingResponse getProgressBookings(String email);
 
-    List<BookingResponse> getAllCancelledBookings(int customerId);
-
-    BookingResponse getProgressBookings(int customerId);
-
-    void deleteCustomer(int customerId);
+    void deactivateProfile(String email);
 }

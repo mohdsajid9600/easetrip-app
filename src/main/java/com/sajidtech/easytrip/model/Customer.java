@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="Customer")
+@Table(name="Customers")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,6 +31,10 @@ public class Customer {
     private Gender gender;
     @Enumerated(value = EnumType.STRING)
     private Status status;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
