@@ -39,7 +39,12 @@ public class CabController {
 
         return ResponseEntity.ok(ApiResponse.success("Cab updated", cabResponse));
     }
-
+    //get own cab by driver
+    @GetMapping("/driver")
+    public ResponseEntity<ApiResponse<CabResponse>> getMyCab(Principal principal){
+        CabResponse cabResponse = this.cabService.getMuCab(principal.getName());
+        return ResponseEntity.ok(ApiResponse.success("Fetched Your Cab", cabResponse));
+    }
     // Get all available cabs
     @GetMapping("/available")
     public ResponseEntity<ApiResponse<List<CabResponse>>> getAllAvailableCabs(){

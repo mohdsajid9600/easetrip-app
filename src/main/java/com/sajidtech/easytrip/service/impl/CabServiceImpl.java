@@ -56,20 +56,22 @@ public class CabServiceImpl implements CabService {
 
     @Override
     public List<CabResponse> getAllAvailableCabs() {
-        List<Cab> availableCabs = cabRepository.getAllAvailableCab();
+        List<Cab> availableCabs = this.cabRepository.getAllAvailableCab();
         return availableCabs.stream().map(CabTransformer::cabToCabResponseForAvailable).collect(Collectors.toList());
     }
 
-    private Driver checkExistenceOfDriver(int driverId) {
-        Driver driver = driverRepository.findById(driverId).orElseThrow(()-> new DriverNotFoundException("Driver id is Invalid"));
-        if(driver.getStatus() == Status.INACTIVE){
-            throw new RuntimeException("Driver is inactive. Access denied");
+    @Override
+    public CabResponse getMuCab(String email) {
+        Driver driver = checkExistenceOfDriver(email);
+        Cab cab = driver.getCab();
+        if(cab == null){
+            throw new CabNotFoundException("Cab not found");
         }
-        return driver;
+        return CabTransformer.cabToCabResponseForDriver(cab);
     }
 
     private Driver checkExistenceOfDriver(String email) {
-        Driver driver = driverRepository.findByEmail(email).orElseThrow(()-> new DriverNotFoundException("Driver Not Found"));
+        Driver driver = this.driverRepository.findByEmail(email).orElseThrow(()-> new DriverNotFoundException("Driver Not Found"));
         if(driver.getStatus() == Status.INACTIVE){
             throw new RuntimeException("Driver is inactive. Access denied");
         }

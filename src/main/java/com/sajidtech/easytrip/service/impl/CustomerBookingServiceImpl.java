@@ -114,11 +114,11 @@ public class CustomerBookingServiceImpl implements CustomerBookingService {
     public void cancelBooking(String email) {
         Customer customer = checkValidCustomer(email);
         Booking booking = getProgressBookingByCustomer(customer);
-        Driver driver = driverRepository.findDriverByBookingId(booking.getBookingId());
+        Driver driver = this.driverRepository.findDriverByBookingId(booking.getBookingId());
 
         booking.setTripStatus(TripStatus.CANCELLED);
         driver.getCab().setAvailable(true);
-        driverRepository.save(driver);
+        this.driverRepository.save(driver);
         BookingResponse bookingResponse = BookingTransformer.bookingToBookingResponse(booking,driver.getCab(),driver,customer);
         //  EmailSender to the customer who ever cancel the cab
 //        EmailService.sendEmailToCustomer(EmailTemplate.getSubject(TripStatus.CANCELLED), bookingResponse, TripStatus.CANCELLED);

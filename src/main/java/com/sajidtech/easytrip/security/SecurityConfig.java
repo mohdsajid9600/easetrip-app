@@ -57,7 +57,7 @@ public class SecurityConfig {
                             String json = """
                                         {
                                           "success": true,
-                                          "message": "Logout successful"
+                                          "message": "Logout successfully"
                                         }
                                     """;
 

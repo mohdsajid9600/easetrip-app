@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BookingNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleBookingNotFound(BookingNotFoundException ex) {
         return new ResponseEntity<>(
-                new ApiErrorResponse(false, ex.getMessage(), "CAB_NOT_FOUND", 404),
+                new ApiErrorResponse(false, ex.getMessage(), "BOOKING_NOT_FOUND", 404),
                 HttpStatus.NOT_FOUND
         );
     }

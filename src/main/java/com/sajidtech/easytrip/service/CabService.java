@@ -13,5 +13,5 @@ public interface CabService {
 
     List<CabResponse> getAllAvailableCabs();
 
-
+    CabResponse getMuCab(String email);
 }
